@@ -1,0 +1,37 @@
+service:
+  flush: 1
+  log_level: info
+
+pipeline:
+  inputs:
+    - name: winevtlog
+      tag: winlog
+      interval_sec: 1
+      channels: Security,System,Application,Setup,Microsoft-Windows-Windows Defender/Operational,Microsoft-Windows-TaskScheduler/Operational,Microsoft-Windows-PowerShell/Operational,Windows PowerShell,Microsoft-Windows-Sysmon/Operational
+
+  filters:
+    - name: lua
+      match: winlog
+      script: C:\Program Files (x86)\fluent-bit\conf\sysmon_parser.lua
+      call: extract_sysmon_fields
+
+    - name: modify
+      match: winlog
+      Add:
+        - host_type windows_endpoint
+        - environment homelab
+        - os windows11
+
+  outputs:
+    - name: es
+      match: winlog
+      host: 192.168.50.10
+      port: 9200
+      index: winlog-%Y.%m.%d
+      logstash_format: false
+      replace_dots: true
+      suppress_type_name: true
+      http_user: admin
+      http_passwd: <opensearch_password_here>
+      tls: on
+      tls.verify: off
