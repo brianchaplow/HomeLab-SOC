@@ -12,7 +12,7 @@ A production-grade Security Operations Center built on consumer hardware, demons
 
 ---
 
-## 🎯 Project Overview
+##  Project Overview
 
 This project implements a full security monitoring stack across three architectural layers:
 
@@ -24,15 +24,15 @@ This project implements a full security monitoring stack across three architectu
 
 ### Key Metrics
 
-- 🔍 **47,290** Suricata detection rules (ET Open ruleset)
-- 🚫 **100+** malicious IPs automatically blocked at edge
-- ⏱️ **15-minute** threat intelligence enrichment cycle
-- 📊 **Real-time** dashboards with GeoIP visualization
-- 🌐 **Zero-trust** connectivity via Tailscale mesh
+-  **47,290** Suricata detection rules (ET Open ruleset)
+-  **100+** malicious IPs automatically blocked at edge
+-  **15-minute** threat intelligence enrichment cycle
+-  **Real-time** dashboards with GeoIP visualization
+-  **Zero-trust** connectivity via Tailscale mesh
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
                               ┌─────────────────┐
@@ -58,25 +58,25 @@ This project implements a full security monitoring stack across three architectu
                             TAILSCALE VPN MESH
                           (Encrypted WireGuard)
                                        │
-┌──────────────────────────────────────▼──────────────────────────────────────┐
-│                          QNAP NAS (SOC Stack)                               │
+┌──────────────────────────────────────▼─────────────────────────────────────┐
+│                          QNAP NAS (SOC Stack)                              │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
 │  │ OpenSearch  │  │  Suricata   │  │ Fluent Bit  │  │    SOC      │        │
 │  │   (SIEM)    │  │   (NIDS)    │  │  (Ingest)   │  │ Automation  │        │
 │  │  Port 9200  │  │ SPAN Port   │  │  Port 5514  │  │  (Python)   │        │
 │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘        │
-│                                                                             │
+│                                                                            │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                         │
 │  │ OpenSearch  │  │    Zeek     │  │  CyberChef  │   + GeoIP Enrichment    │
 │  │ Dashboards  │  │   (NSM)     │  │  (Analysis) │   + AbuseIPDB Lookup    │
 │  │  Port 5601  │  │             │  │  Port 8000  │   + Discord Alerts      │
 │  └─────────────┘  └─────────────┘  └─────────────┘                         │
-└─────────────────────────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🔧 Components
+##  Components
 
 ### Network Monitoring
 
@@ -104,21 +104,21 @@ This project implements a full security monitoring stack across three architectu
 ### Network Infrastructure
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│              TP-Link TL-SG108E Managed Switch               │
-│                                                             │
+┌────────────────────────────────────────────────────────────┐
+│              TP-Link TL-SG108E Managed Switch              │
+│                                                            │
 │  Port 1: Router uplink     Port 5: Eufy Security Hub       │
 │  Port 2: Windows Laptop    Port 6: Available               │
 │  Port 3: Kali Machine      Port 7: Available               │
 │  Port 4: Hue Bridge        Port 8: SPAN → QNAP eth4        │
-│                                                             │
+│                                                            │
 │  Mirror Config: Ports 1-7 (ingress+egress) → Port 8        │
-└─────────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📁 Repository Structure
+##  Repository Structure
 
 ```
 HomeLab-SOC/
@@ -145,7 +145,7 @@ HomeLab-SOC/
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -183,7 +183,7 @@ See [docs/architecture.md](docs/architecture.md) for detailed setup instructions
 
 ---
 
-## 📊 Dashboards
+##  Dashboards
 
 > Screenshots coming soon
 
@@ -193,7 +193,7 @@ See [docs/architecture.md](docs/architecture.md) for detailed setup instructions
 
 ---
 
-## 🛣️ Roadmap
+##  Roadmap
 
 - [x] Core SIEM infrastructure (OpenSearch + Fluent Bit)
 - [x] Network IDS (Suricata with ET Open rules)
@@ -208,7 +208,7 @@ See [docs/architecture.md](docs/architecture.md) for detailed setup instructions
 
 ---
 
-## 🧰 Tech Stack
+##  Tech Stack
 
 | Category | Technologies |
 |----------|-------------|
@@ -224,7 +224,7 @@ See [docs/architecture.md](docs/architecture.md) for detailed setup instructions
 
 ---
 
-## 👤 Author
+##  Author
 
 **Brian Chaplow**
 
@@ -234,13 +234,13 @@ See [docs/architecture.md](docs/architecture.md) for detailed setup instructions
 
 ---
 
-## 📝 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - [Emerging Threats Open](https://rules.emergingthreats.net/) - Suricata ruleset
 - [SwiftOnSecurity](https://github.com/SwiftOnSecurity/sysmon-config) - Sysmon configuration inspiration
