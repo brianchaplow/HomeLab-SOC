@@ -1,0 +1,116 @@
+# Docker Compose - HomeLab SOC Stack
+# Location: /share/Container/SOC/compose/docker-compose.yml
+# Purpose: Define all SOC containers with proper configuration
+
+version: '3.8'
+
+services:
+  # OpenSearch - SIEM backend
+  opensearch:
+    image: opensearchproject/opensearch:latest
+    container_name: opensearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - DISABLE_SECURITY_PLUGIN=false
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_PASSWORD}
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    volumes:
+      - /share/Container/SOC/containers/opensearch/data:/usr/share/opensearch/data
+    networks:
+      - soc-network
+
+  # OpenSearch Dashboards - Visualization
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:latest
+    container_name: opensearch-dashboards
+    restart: unless-stopped
+    environment:
+      - 'OPENSEARCH_HOSTS=["https://192.168.50.10:9200"]'
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
+    ports:
+      - "5601:5601"
+    depends_on:
+      - opensearch
+    networks:
+      - soc-network
+
+  # Suricata - Network IDS
+  # Note: Uses host network for SPAN capture on eth4
+  suricata-live:
+    image: jasonish/suricata:latest
+    container_name: suricata-live
+    restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - SYS_NICE
+      - NET_RAW
+    command: -i eth4
+    volumes:
+      - /share/Container/SOC/logs/suricata:/var/log/suricata
+      - /share/Container/SOC/containers/suricata/rules:/var/lib/suricata/rules
+      - /share/Container/SOC/containers/suricata/config:/etc/suricata
+
+  # Fluent Bit - Log aggregation
+  fluentbit:
+    image: fluent/fluent-bit:latest
+    container_name: fluentbit
+    restart: unless-stopped
+    ports:
+      - "5514:5514/tcp"
+      - "5514:5514/udp"
+    volumes:
+      - /share/Container/SOC/ingestion/fluentbit:/fluentbit
+      - /share/Container/SOC/logs/suricata:/logs/suricata:ro
+      - /share/Container/SOC/logs/zeek:/logs/zeek:ro
+    networks:
+      - soc-network
+
+  # Zeek - Network Security Monitor
+  zeek:
+    image: zeek/zeek:latest
+    container_name: zeek
+    restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - /share/Container/SOC/logs/zeek:/var/log/zeek
+
+  # CyberChef - Data Analysis
+  cyberchef:
+    image: mpepping/cyberchef:latest
+    container_name: cyberchef
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    networks:
+      - soc-network
+
+  # SOC Automation - Threat Intel & Response
+  soc-automation:
+    build: /share/Container/SOC/containers/soc-automation
+    container_name: soc-automation
+    restart: unless-stopped
+    environment:
+      - OPENSEARCH_HOST=192.168.50.10
+      - OPENSEARCH_PORT=9200
+      - OPENSEARCH_USER=admin
+      - OPENSEARCH_PASSWORD=${OPENSEARCH_PASSWORD}
+      - ABUSEIPDB_API_KEY=${ABUSEIPDB_API_KEY}
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
+    volumes:
+      - /share/Container/SOC/containers/soc-automation/scripts:/app
+    networks:
+      - soc-network
+
+networks:
+  soc-network:
+    driver: bridge
