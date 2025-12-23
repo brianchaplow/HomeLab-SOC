@@ -1,0 +1,29 @@
+{
+  "description": "Enrich IP addresses with GeoIP data using MaxMind GeoLite2",
+  "processors": [
+    {
+      "geoip": {
+        "field": "src_ip",
+        "target_field": "src_geo",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "geoip": {
+        "field": "dest_ip",
+        "target_field": "dest_geo",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "geoip": {
+        "field": "client_ip",
+        "target_field": "client_geo",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    }
+  ]
+}
