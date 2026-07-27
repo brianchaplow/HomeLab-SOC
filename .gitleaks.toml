@@ -1,0 +1,61 @@
+# gitleaks config for HomeLab-SOC (legacy v1, PUBLIC repo)
+#
+# Added 2026-07-27, closing a gap in the workspace-wide gitleaks rollout: this
+# repo predates the rollout and had no pre-commit hook and no CI scan. The
+# trigger was a live restic repository password found sitting untracked in
+# docs/ -- never committed, but one `git add -A` away from a public push.
+#
+# Mirrors homelab-soc-portfolio's config so both public SOC repos enforce the
+# same rules. Full history was scanned clean (4 commits) before this landed.
+#
+# NOTE ON WHAT THIS DOES NOT CATCH: the incident above was a bare passphrase
+# after a plain-English label ("Brisket restic backup: <pw>"), with part of the
+# secret in the FILENAME. gitleaks matches patterned secrets in file CONTENT and
+# would not have flagged either form. This config is defence in depth, not the
+# control -- the control is keeping credentials out of repo working trees.
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "tailscale-cgnat-ip"
+description = "Tailscale CGNAT IP literal (100.64.0.0/10) -- admin-tier; do not commit to public repos"
+regex = '''\b100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\.\d+\.\d+\b'''
+tags = ["tailscale", "privacy"]
+
+[[rules]]
+id = "multiline-openssh-private-key"
+description = "Multi-line OpenSSH private key block (closes the single-line-scrub blind spot that produced a 38-day public leak in the sibling portfolio repo, 2026-04-11)"
+regex = '''-----BEGIN OPENSSH PRIVATE KEY-----[\s\S]*?-----END OPENSSH PRIVATE KEY-----'''
+tags = ["ssh", "key"]
+
+[allowlist]
+description = "Inert self-references + one KNOWN-UNREMEDIATED legacy commit (see below)"
+paths = [
+    '''\.gitleaks\.toml$''',
+    '''\.pre-commit-config\.yaml$''',
+    '''\.github/workflows/gitleaks\.yml$''',
+]
+
+# KNOWN FINDING, DELIBERATELY NOT HIDDEN -- READ BEFORE REMOVING THIS ENTRY.
+#
+# Commit e8b5b8f ("Add comprehensive SOC documentation and configs",
+# 2025-12-23) committed 4 Tailscale CGNAT IP literals to this PUBLIC repo:
+#   configs/README.md                  x1
+#   configs/fluent-bit/fluent-bit-vm.conf  x1
+#   docs/architecture.md               x2
+# They cover 2 tailnet hosts (smokehouse and the GCP VM) and have been public
+# since 2025-12-23.
+#
+# This is allowlisted BY COMMIT, not by path or by regex, on purpose: it keeps
+# CI green on the legacy history while still failing any NEW commit that
+# introduces a tailnet IP -- including edits to the same three files.
+#
+# Remediating properly means scrubbing the literals AND rewriting published
+# history (force-push on a public repo), which is a destructive operation that
+# needs an explicit decision. Until that happens this stays an accepted,
+# documented exposure rather than a silent one. Remove this entry once the
+# history is rewritten.
+commits = [
+    "e8b5b8f854a35536c615ed8d80c825f543ad6089",
+]
