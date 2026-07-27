@@ -30,7 +30,7 @@ regex = '''-----BEGIN OPENSSH PRIVATE KEY-----[\s\S]*?-----END OPENSSH PRIVATE K
 tags = ["ssh", "key"]
 
 [allowlist]
-description = "Inert self-references + one KNOWN-UNREMEDIATED legacy commit (see below)"
+description = "Inert self-references only -- no findings are suppressed (see the remediation note below)"
 paths = [
     '''\.gitleaks\.toml$''',
     '''\.pre-commit-config\.yaml$''',
