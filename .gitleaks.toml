@@ -37,25 +37,23 @@ paths = [
     '''\.github/workflows/gitleaks\.yml$''',
 ]
 
-# KNOWN FINDING, DELIBERATELY NOT HIDDEN -- READ BEFORE REMOVING THIS ENTRY.
+# REMEDIATED 2026-07-27 -- the previous commit-scoped allowlist is GONE, on purpose.
 #
-# Commit e8b5b8f ("Add comprehensive SOC documentation and configs",
-# 2025-12-23) committed 4 Tailscale CGNAT IP literals to this PUBLIC repo:
-#   configs/README.md                  x1
-#   configs/fluent-bit/fluent-bit-vm.conf  x1
-#   docs/architecture.md               x2
-# They cover 2 tailnet hosts (smokehouse and the GCP VM) and have been public
-# since 2025-12-23.
+# SIX Tailscale CGNAT IP literals (2 tailnet hosts: the QNAP and the GCP VM) were
+# public in this repo from 2025-12-23 until 2026-07-27, across:
+#   configs/README.md                          x1
+#   configs/fluent-bit/fluent-bit-vm.conf      x1
+#   docs/architecture.md                       x2
+#   screenshots/homelab-soc-architecture.svg   x2   <-- gitleaks NEVER reported these
 #
-# This is allowlisted BY COMMIT, not by path or by regex, on purpose: it keeps
-# CI green on the legacy history while still failing any NEW commit that
-# introduces a tailnet IP -- including edits to the same three files.
+# Note the count: the earlier allowlist said FOUR because that is all gitleaks
+# found. `git grep` found six. gitleaks skips .svg as an image type, so the
+# architecture diagram's two literals were invisible to it. Do not treat a green
+# gitleaks run as proof that a repo is clean of internal addressing.
 #
-# Remediating properly means scrubbing the literals AND rewriting published
-# history (force-push on a public repo), which is a destructive operation that
-# needs an explicit decision. Until that happens this stays an accepted,
-# documented exposure rather than a silent one. Remove this entry once the
-# history is rewritten.
-commits = [
-    "e8b5b8f854a35536c615ed8d80c825f543ad6089",
-]
+# All six were replaced with <TAILSCALE_IP_QNAP> / <TAILSCALE_IP_GCP> placeholders
+# and the ENTIRE history was rewritten with git-filter-repo, then force-pushed.
+# The literals no longer exist in any reachable object, so no allowlist is needed
+# and this rule now applies to full history with nothing suppressed.
+#
+# If this scan ever goes red on these files again, it is a REAL new leak.
