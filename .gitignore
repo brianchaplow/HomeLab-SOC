@@ -19,3 +19,20 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.bak
+
+# Local-only files (2026-07-28 audit). These sat untracked in this PUBLIC repo's
+# working tree since 2025-12-24 -- one `git add -A` from publication. Nothing in
+# README.md or docs/ references any screenshot, so none of this is load-bearing.
+# Ignored rather than deleted: they are still useful locally.
+#
+# CLAUDE.md is agent guidance for the private workspace. It carries internal LAN
+# addressing and, worse, states exactly where the real credentials live.
+CLAUDE.md
+#
+# cloudflare-events.png lists request Source IPs including a 108.56.24.x address
+# -- the same /24 the NAS reports as its external IPv4, i.e. the home public IP.
+# gitleaks does NOT scan images, so no scan would ever have caught it.
+screenshots/cloudflare-events.png
+screenshots/discord-alert.png
+screenshots/discord-threat.png
+screenshots/nmap-output.png
