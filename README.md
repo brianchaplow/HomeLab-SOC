@@ -1,5 +1,7 @@
 # 🛡️ HomeLab SOC
 
+> **Note:** This is an earlier (v1) version of this project and is no longer actively maintained. The current version is **[HomeLab-SOC-v3](https://github.com/brianchaplow/HomeLab-SOC-v3)**. Configs here are kept for reference; IPs and hostnames have been replaced with placeholders.
+
 [![OpenSearch](https://img.shields.io/badge/OpenSearch-2.x-blue?logo=opensearch)](https://opensearch.org/)
 [![Suricata](https://img.shields.io/badge/Suricata-IDS%2FIPS-orange)](https://suricata.io/)
 [![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker)](https://docker.com/)
@@ -129,18 +131,20 @@ HomeLab-SOC/
 │   ├── fluent-bit/
 │   │   ├── fluent-bit-qnap.conf  # NAS-side log collection
 │   │   ├── fluent-bit-vm.conf    # GCP VM Apache logs
+│   │   ├── fluent-bit-windows.yaml # Windows Sysmon/Event Log shipping
 │   │   ├── parsers-qnap.conf     # Syslog & JSON parsers
-│   │   └── parsers-vm.conf       # Apache log parser with geo
+│   │   ├── parsers-vm.conf       # Apache log parser with geo
+│   │   └── sysmon_parser.lua     # Sysmon event field parser
 │   └── opensearch/
 │       └── geoip-pipeline.json   # MaxMind GeoLite2 enrichment
 ├── scripts/
 │   └── soc-startup.sh            # QNAP boot initialization
 ├── dashboards/
-│   └── (exported .ndjson files)
+│   └── export.ndjson             # OpenSearch Dashboards saved objects
 ├── docs/
 │   └── architecture.md           # Detailed documentation
 └── screenshots/
-    └── (dashboard images)
+    └── (architecture diagram & dashboard images)
 ```
 
 ---

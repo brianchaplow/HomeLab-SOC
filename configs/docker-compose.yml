@@ -29,7 +29,7 @@ services:
     container_name: opensearch-dashboards
     restart: unless-stopped
     environment:
-      - 'OPENSEARCH_HOSTS=["https://192.168.50.10:9200"]'
+      - 'OPENSEARCH_HOSTS=["https://${OPENSEARCH_HOST}:9200"]'
       - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
     ports:
       - "5601:5601"
@@ -98,7 +98,7 @@ services:
     container_name: soc-automation
     restart: unless-stopped
     environment:
-      - OPENSEARCH_HOST=192.168.50.10
+      - OPENSEARCH_HOST=${OPENSEARCH_HOST}
       - OPENSEARCH_PORT=9200
       - OPENSEARCH_USER=admin
       - OPENSEARCH_PASSWORD=${OPENSEARCH_PASSWORD}

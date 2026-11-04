@@ -131,7 +131,7 @@ The mesh handles connectivity automatically—logs flow from cloud to home lab w
 
 ### Network Monitoring: TP-Link Managed Switch
 
-A TP-Link TL-SG108E (192.168.50.250) configured for port mirroring:
+A TP-Link TL-SG108E (<SWITCH_IP>) configured for port mirroring:
 
 | Port | Device | Purpose |
 |------|--------|---------|
@@ -159,7 +159,7 @@ Seven Docker containers running the core SOC stack:
 | **CyberChef** | 8000 | Data analysis toolkit |
 
 The QNAP has dual network connections:
-- **eth5** (10Gbps): Main traffic to router at 192.168.50.10
+- **eth5** (10Gbps): Main LAN uplink (NAS address <QNAP_LAN_IP>)
 - **eth4** (1Gbps): SPAN capture interface (no IP assigned)
 
 A startup script ensures eth4 has no IP and Suricata rules are updated on every boot.

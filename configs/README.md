@@ -30,28 +30,28 @@ cp .env.example .env
 
 Copy to QNAP:
 ```bash
-scp -P 2222 fluent-bit/fluent-bit-qnap.conf bchaplow@192.168.50.10:/share/Container/SOC/ingestion/fluentbit/fluent-bit.conf
-scp -P 2222 fluent-bit/parsers-qnap.conf bchaplow@192.168.50.10:/share/Container/SOC/ingestion/fluentbit/parsers.conf
+scp -P 2222 fluent-bit/fluent-bit-qnap.conf <user>@<QNAP_LAN_IP>:/share/Container/SOC/ingestion/fluentbit/fluent-bit.conf
+scp -P 2222 fluent-bit/parsers-qnap.conf <user>@<QNAP_LAN_IP>:/share/Container/SOC/ingestion/fluentbit/parsers.conf
 ```
 
 ### 3. GCP VM Fluent Bit
 
 Copy to VM:
 ```bash
-gcloud compute scp fluent-bit/fluent-bit-vm.conf wordpress-1-vm:/etc/fluent-bit/fluent-bit.conf --zone=us-east4-a
-gcloud compute scp fluent-bit/parsers-vm.conf wordpress-1-vm:/etc/fluent-bit/parsers.conf --zone=us-east4-a
+gcloud compute scp fluent-bit/fluent-bit-vm.conf <GCP_VM_NAME>:/etc/fluent-bit/fluent-bit.conf --zone=<GCP_ZONE>
+gcloud compute scp fluent-bit/parsers-vm.conf <GCP_VM_NAME>:/etc/fluent-bit/parsers.conf --zone=<GCP_ZONE>
 ```
 
 Then restart:
 ```bash
-gcloud compute ssh wordpress-1-vm --zone=us-east4-a --command="sudo systemctl restart fluent-bit"
+gcloud compute ssh <GCP_VM_NAME> --zone=<GCP_ZONE> --command="sudo systemctl restart fluent-bit"
 ```
 
 ### 4. OpenSearch GeoIP Pipeline
 
 Create the ingest pipeline:
 ```bash
-curl -sk -u admin -X PUT 'https://192.168.50.10:9200/_ingest/pipeline/geoip-enrichment' \
+curl -sk -u admin -X PUT 'https://<QNAP_LAN_IP>:9200/_ingest/pipeline/geoip-enrichment' \
   -H 'Content-Type: application/json' \
   -d @opensearch/geoip-pipeline.json
 ```
