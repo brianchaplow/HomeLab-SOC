@@ -5,6 +5,8 @@
 # Trigger: /etc/config/autorun.sh
 
 LOG_FILE="/share/Container/SOC/logs/startup.log"
+# OpenSearch host (NAS LAN IP) -- set in the environment, never hard-code it here
+OPENSEARCH_HOST="${OPENSEARCH_HOST:-}"
 echo "$(date): SOC startup script initiated" >> "$LOG_FILE"
 
 # Remove IP from eth4 (SPAN interface must be passive)
@@ -31,7 +33,13 @@ docker restart suricata-live >> "$LOG_FILE" 2>&1
 
 # Verify OpenSearch is accessible
 echo "$(date): Checking OpenSearch health" >> "$LOG_FILE"
-curl -sk -u admin:${OPENSEARCH_PASSWORD} \
-    'https://192.168.50.10:9200/_cluster/health?pretty' >> "$LOG_FILE" 2>&1
+# Credentials are passed via stdin config (-K -) so the password does not
+# appear in the process list.
+if [ -z "$OPENSEARCH_HOST" ]; then
+    echo "$(date): OPENSEARCH_HOST not set, skipping health check" >> "$LOG_FILE"
+else
+    printf 'user = "admin:%s"\n' "${OPENSEARCH_PASSWORD}" | curl -sk -K - \
+        "https://${OPENSEARCH_HOST}:9200/_cluster/health?pretty" >> "$LOG_FILE" 2>&1
+fi
 
 echo "$(date): SOC startup script completed" >> "$LOG_FILE"

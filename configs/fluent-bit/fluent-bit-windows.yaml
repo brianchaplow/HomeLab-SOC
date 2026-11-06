@@ -25,7 +25,7 @@ pipeline:
   outputs:
     - name: es
       match: winlog
-      host: 192.168.50.10
+      host: <QNAP_LAN_IP>
       port: 9200
       index: winlog-%Y.%m.%d
       logstash_format: false
